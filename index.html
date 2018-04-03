@@ -3,16 +3,88 @@
 <head>
   <link rel="stylesheet" type="text/css" href="basic.css">
   <script>
-    document.documentElement.setAttribute('data-theme','code')
+    document.documentElement.setAttribute('data-theme','code');
+
+    class Play {
+      constructor(v, s, d, r, desc) {
+        this.v = v;
+        this.s = s;
+        this.d = d;
+        this.r = r;
+        this.desc = desc
+      }
+      _getHref() {
+        return 'https://mritterhoff.github.io/ytclip/?'
+          + `v=${this.v}&`
+          + `s=${this.s}&`
+          + `d=${this.d}&`
+          + `r=${this.r}`;
+      }
+      makeLinkEl() {
+        let a = document.createElement('a');
+        a.setAttribute('href', this._getHref());
+        a.innerHTML = this.desc;
+        return a;
+      }
+    }
+
+    function makeAndAttachHeader(headerText) {
+      let headerEl = document.createElement('h3');
+      headerEl.innerHTML = headerText;
+      document.getElementsByTagName('body')[0].appendChild(headerEl);
+      return headerEl;
+    }
+
+    function makeAndAttachUL() {
+      let ul = document.createElement('ul');
+      document.getElementsByTagName('body')[0].appendChild(ul);
+      return ul;
+    }
+
+    function makeAndAddLI(list, child) {
+      let li = document.createElement('li');
+      li.appendChild(child);
+      list.appendChild(li);
+      return li;
+    }
+
+    let elements = [];
+    // elements.push("Match #6 - Bump and Grind");
+    // elements.push("Match #7 - Kristi Yamaguchi");
+    elements.push("Match #8 - Rough Sets");
+    elements.push(new Play('pI4T4C75H0U', 1032, 9.5, 1, "Let's make every point this short."));
+    elements.push(new Play('pI4T4C75H0U', 1650, 6, 1, "Sue digs hit and then covers potential block."));
+    elements.push(new Play('pI4T4C75H0U', 2532, 8.5, 1, "Mark blocks hit from overset."));
+
+
+    function putEverythingOnThePage() {
+      let list;
+      while (elements.length > 0) {
+        let curElement = elements.shift();
+
+        if (typeof curElement === 'string') {
+          makeAndAttachHeader(curElement);
+          list = undefined;
+        } 
+        else {
+          makeAndAddLI(list || makeAndAttachUL(), curElement.makeLinkEl());
+        }
+      }
+    }
+
+    window.onload = putEverythingOnThePage;
   </script>
 </head>
 <body>
   <a id='source' href='https://github.com/mritterhoff/HighlightsOfCatan'>source</a>
   <h1>Highlights Of Catan</h1>
-  <h2>Match #8 - Rough Sets</h2>
+  <h2>(Catan is watching)</h2>
+
+<!--   <h2></h2>
   <ul>
-    <li><a href="https://mritterhoff.github.io/ytclip/?d=9.5&r=1&s=1032&v=pI4T4C75H0U">Sue covers like a boss</a></li>
+    <li><a href="https://mritterhoff.github.io/ytclip/?d=9.5&r=1&s=1032&v=pI4T4C75H0U"></a></li>
+    <li><a href="https://mritterhoff.github.io/ytclip/?v=pI4T4C75H0U&d=6&r=1&s=1650"></a></li>
     <li><a href="https://mritterhoff.github.io/ytclip/?v=pI4T4C75H0U&s=2532&d=8.5&r=1">Mark blocks hit from overset</a></li>
-  </ul>
+  </ul> -->
 </body>
 </html>
