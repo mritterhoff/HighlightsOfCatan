@@ -2,6 +2,13 @@
 <html>
 <head>
   <link rel="stylesheet" type="text/css" href="basic.css">
+  <style>
+    h3 {
+      font-size: 180%;
+    }
+
+  </style>
+
   <script>
     document.documentElement.setAttribute('data-theme','code');
 
@@ -52,9 +59,9 @@
     // elements.push("Match #6 - Bump and Grind");
     // elements.push("Match #7 - Kristi Yamaguchi");
     elements.push("Match #8 - Rough Sets");
-    elements.push(new Play('pI4T4C75H0U', 1032, 9.5, 1, "Let's make every point this short."));
+    elements.push(new Play('pI4T4C75H0U', 1032, 9.5, 1, "Let's make every point this short. Sue -> Denise -> Avi."));
     elements.push(new Play('pI4T4C75H0U', 1650, 6, 1, "Sue digs hit and then covers potential block."));
-    elements.push(new Play('pI4T4C75H0U', 2532, 8.5, 1, "Mark blocks hit from overset."));
+    elements.push(new Play('pI4T4C75H0U', 2532, 8.5, 1, "Hoff blocks hit from overset."));
 
     elements.push("Semi-Finals - Rough Sets");
     elements.push(new Play('xQrro1-z3AE', 271, 5, 1, "Sue's no-look dump kill."));
@@ -62,21 +69,23 @@
     elements.push("Finals - Sets In Strange Places");
     elements.push(new Play('lu2qBOP8Vx0', 461, 5, .5, "DK the Wizard's wall of wheat."));
     elements.push(new Play('lu2qBOP8Vx0', 1202, 6, 1, "Mark one-handed sets Denise for a kill."));
-    
     elements.push(new Play('lu2qBOP8Vx0', 2060, 10, 1, "Andrew kills it to take game 2 of finals."));
     elements.push(new Play('lu2qBOP8Vx0', 3104, 8, 1, "Denise fields the pass, gets set by Mark, and then kills it."));
 
     function putEverythingOnThePage() {
-      let list;
+      let ul;
       while (elements.length > 0) {
         let curElement = elements.shift();
 
         if (typeof curElement === 'string') {
           makeAndAttachHeader(curElement);
-          list = undefined;
+          ul = undefined;
         } 
         else {
-          makeAndAddLI(list || makeAndAttachUL(), curElement.makeLinkEl());
+          if (!ul) {
+            ul = makeAndAttachUL();
+          } 
+          makeAndAddLI(ul, curElement.makeLinkEl());
         }
       }
     }
