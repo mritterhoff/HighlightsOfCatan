@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" type="text/css" href="basic.css">
+  <link rel='stylesheet' type='text/css' href='basic.css'>
   <style>
     h3 {
       font-size: 180%;
@@ -21,7 +21,7 @@
         this.desc = desc
       }
       _getHref() {
-        return 'https://mritterhoff.github.io/ytclip/?'
+        return 'http://youclipper.com/?'
           + `v=${this.v}&`
           + `s=${this.s}&`
           + `d=${this.d}&`
@@ -35,8 +35,53 @@
       }
     }
 
-    function makeAndAttachHeader(headerText) {
-      let headerEl = document.createElement('h3');
+    class Playlist {
+      constructor() {
+        this.elements = [];
+        this.lastVidID = undefined;
+      }
+
+      // TODO store ID to make link 
+      addSeason(title, playlistId) {
+        this.elements.push({title: title, headerLevel: 2});
+      }
+
+      // TODO store ID to make link 
+      addGame(title, videoId) {
+        this.elements.push({title: title, headerLevel: 3});
+        this.lastVidID = videoId;
+      }
+
+      addPlay(s, d, r, desc) {
+        this.elements.push(new Play(this.lastVidID, s, d, r, desc));
+      }
+
+      putOnPage() {      
+        let ul;
+
+        while (this.elements.length > 0) {
+          let curElement = this.elements.shift();
+
+          if (curElement.constructor.name === 'Object') {
+            makeAndAttachHeader(curElement.title, curElement.headerLevel);
+            ul = undefined;
+          }
+          else {
+            if (!ul) {
+              ul = makeAndAttachUL();
+            } 
+            makeAndAddLI(ul, curElement.makeLinkEl());
+          }
+        }
+      }
+    }
+
+    function makeAndAttachHeader(headerText, headerLevel) {
+      if ([1, 2, 3].indexOf(headerLevel) < 0) { 
+        console.log('headerLevel has unexpected value', headerLevel);
+      }
+
+      let headerEl = document.createElement('h' + headerLevel);
       headerEl.innerHTML = headerText;
       document.getElementsByTagName('body')[0].appendChild(headerEl);
       return headerEl;
@@ -55,48 +100,36 @@
       return li;
     }
 
-    let elements = [];
-    // elements.push("Match #6 - Bump and Grind");
-    // elements.push("Match #7 - Kristi Yamaguchi");
-    elements.push("Match #8 - Rough Sets");
-    elements.push(new Play('pI4T4C75H0U', 1032, 9.5, 1, "Let's make every point this short. Sue -> Denise -> Avi."));
-    elements.push(new Play('pI4T4C75H0U', 1650, 6, 1, "Sue digs hit and then covers potential block."));
-    elements.push(new Play('pI4T4C75H0U', 2532, 8.5, 1, "Hoff blocks hit from overset."));
+    let playlist = new Playlist();
+    playlist.addSeason('Winter \'18 Season', 'PLnyLEAQD8TQdK9c8RnzQ_TM4yldILtbyd');
+    // playlist.addSeason('Match #6 - Bump and Grind');
+    // playlist.addSeason('Match #7 - Kristi Yamaguchi');
+    playlist.addGame('Match 8: Rough Sets', 'pI4T4C75H0U');
+    playlist.addPlay(1032, 9.5, 1, 'Let\'s make every point this short. Sue -> Denise -> Avi.');
+    playlist.addPlay(1650, 6, 1, 'Sue digs hit and then covers potential block.');
+    playlist.addPlay(2532, 8.5, 1, 'Hoff blocks hit from overset.');
 
-    elements.push("Semi-Finals - Rough Sets");
-    elements.push(new Play('xQrro1-z3AE', 271, 5, 1, "Sue's no-look dump kill."));
+    playlist.addGame('Semi-Finals: Rough Sets', 'xQrro1-z3AE');
+    playlist.addPlay(271, 5, 1, 'Sue\'s no-look dump kill.');
 
-    elements.push("Finals - Sets In Strange Places");
-    elements.push(new Play('lu2qBOP8Vx0', 461, 5, .5, "DK the Wizard's wall of wheat."));
-    elements.push(new Play('lu2qBOP8Vx0', 1202, 6, 1, "Mark one-handed sets Denise for a kill."));
-    elements.push(new Play('lu2qBOP8Vx0', 2060, 10, 1, "Andrew kills it to take game 2 of finals."));
-    elements.push(new Play('lu2qBOP8Vx0', 3104, 8, 1, "Denise fields the pass, gets set by Mark, and then kills it."));
+    playlist.addGame('Finals: Sets In Strange Places', 'lu2qBOP8Vx0');
+    playlist.addPlay(461, 5, .5, 'DK the Wizard\'s wall of wheat.');
+    playlist.addPlay(1202, 6, 1, 'Mark one-handed sets Denise for a kill.');
+    playlist.addPlay(2060, 10, 1, 'Andrew kills it to take game 2 of finals.');
+    playlist.addPlay(3104, 8, 1, 'Denise fields the pass, gets set by Mark, and then kills it.');
 
-    function putEverythingOnThePage() {
-      let ul;
-      while (elements.length > 0) {
-        let curElement = elements.shift();
+    playlist.addSeason('Spring \'18 Season', 'PLnyLEAQD8TQfeqH_4IFUs_vmskm5FMFss');
+    playlist.addGame('Match 1: Rough Sets', 'K37VdkT46cM');
+    playlist.addPlay('21:35', 7, 1, 'New volleyball power couple gets it done'); 
+    playlist.addPlay('32:32', 7.5, 1, 'Bananas set that Jiyu put up right on the net for a kill from Avi'); 
 
-        if (typeof curElement === 'string') {
-          makeAndAttachHeader(curElement);
-          ul = undefined;
-        } 
-        else {
-          if (!ul) {
-            ul = makeAndAttachUL();
-          } 
-          makeAndAddLI(ul, curElement.makeLinkEl());
-        }
-      }
-    }
-
-    window.onload = putEverythingOnThePage;
+    window.onload = playlist.putOnPage.bind(playlist);
   </script>
 </head>
 <body>
   <a id='source' href='https://github.com/mritterhoff/HighlightsOfCatan'>source</a>
   <h1>Highlights Of Catan</h1>
   <h2>(Catan is watching)</h2>
-  <p>Welcome to the *official* highlight clip page for the Setters of Catan volleyball team! To add a clip, message Hoff with the link to the video (with timestamp in the link or listed separately) and what you want the description to be. The playlist with all of our games can be found <a href='https://www.youtube.com/playlist?list=PLnyLEAQD8TQdK9c8RnzQ_TM4yldILtbyd'>here</a>. Feel free to share with friends!</p>
+  <p>Welcome to the *official* highlight clip page for the Setters of Catan volleyball team! To add a clip, message Hoff with the link to the video (with timestamp in the link or listed separately) and what you want the description to be. Check out our <a href='https://www.youtube.com/playlist?list=PLnyLEAQD8TQdK9c8RnzQ_TM4yldILtbyd'>Winter '18</a> and <a href='https://www.youtube.com/playlist?list=PLnyLEAQD8TQfeqH_4IFUs_vmskm5FMFss'>Spring '18</a> playlists to see all of our recorded games. Feel free to share with friends!</p>
 </body>
 </html>
