@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <title>Highlights Of Catan</title>
   <link rel='stylesheet' type='text/css' href='basic.css'>
   <style>
     h3 {
       font-size: 180%;
     }
-
   </style>
 
   <script>
@@ -20,13 +20,16 @@
         this.r = r;
         this.desc = desc
       }
+
       _getHref() {
+        // TODO should enable https on site
         return 'http://youclipper.com/?'
           + `v=${this.v}&`
           + `s=${this.s}&`
           + `d=${this.d}&`
           + `r=${this.r}`;
       }
+
       makeLinkEl() {
         let a = document.createElement('a');
         a.setAttribute('href', this._getHref());
@@ -38,51 +41,60 @@
     class Playlist {
       constructor() {
         this.elements = [];
-        this.lastVidID = undefined;
+        this.currentVideoId = undefined;
+        this.currentPlaylistId = undefined;
       }
 
-      // TODO store ID to make link 
       addSeason(title, playlistId) {
-        this.elements.push({title: title, headerLevel: 2});
+        this.elements.push({
+          text: title,
+          link: `https://www.youtube.com/playlist?list=${playlistId}`,
+          level: 2
+        });
+        this.currentPlaylistId = playlistId;
       }
 
-      // TODO store ID to make link 
       addGame(title, videoId) {
-        this.elements.push({title: title, headerLevel: 3});
-        this.lastVidID = videoId;
+        this.elements.push({
+          text: title, 
+          link: `https://www.youtube.com/watch?v=${videoId}&list=${this.currentPlaylistId}`,
+          level: 3
+        });
+        this.currentVideoId = videoId;
       }
 
       addPlay(s, d, r, desc) {
-        this.elements.push(new Play(this.lastVidID, s, d, r, desc));
+        this.elements.push(new Play(this.currentVideoId, s, d, r, desc));
       }
 
-      putOnPage() {      
+      renderToPage() {      
         let ul;
 
         while (this.elements.length > 0) {
           let curElement = this.elements.shift();
 
-          if (curElement.constructor.name === 'Object') {
-            makeAndAttachHeader(curElement.title, curElement.headerLevel);
-            ul = undefined;
-          }
-          else {
+          if (curElement.constructor.name === 'Play') {
             if (!ul) {
               ul = makeAndAttachUL();
             } 
             makeAndAddLI(ul, curElement.makeLinkEl());
           }
+          else {
+            // otherwise it's a header
+            makeAndAttachHeader(curElement);
+            ul = undefined;
+          }
         }
       }
     }
 
-    function makeAndAttachHeader(headerText, headerLevel) {
-      if ([2, 3].indexOf(headerLevel) < 0) { 
-        console.log('headerLevel has unexpected value', headerLevel);
+    function makeAndAttachHeader(header) {
+      if ([2, 3].indexOf(header.level) < 0) { 
+        console.log('level has unexpected value', header.level);
       }
 
-      let headerEl = document.createElement('h' + headerLevel);
-      headerEl.innerHTML = headerText;
+      let headerEl = document.createElement('h' + header.level);
+      headerEl.innerHTML = `<a href='${header.link}'>${header.text}</a>`;
       document.getElementsByTagName('body')[0].appendChild(headerEl);
       return headerEl;
     }
@@ -129,13 +141,13 @@
     // playlist.addSeason('Match #7 - Kristi Yamaguchi');
     // playlist.addSeason('Match #6 - Bump and Grind');
 
-    window.onload = playlist.putOnPage.bind(playlist);
+    window.onload = playlist.renderToPage.bind(playlist);
   </script>
 </head>
 <body>
   <a id='source' href='https://github.com/mritterhoff/HighlightsOfCatan'>source</a>
   <h1>Highlights Of Catan</h1>
   <h2>(Catan is watching)</h2>
-  <p>Welcome to the *official* highlight clip page for the Setters of Catan volleyball team! To add a clip, message Hoff with the link to the video (with timestamp in the link or listed separately) and what you want the description to be. Check out our <a href='https://www.youtube.com/playlist?list=PLnyLEAQD8TQdK9c8RnzQ_TM4yldILtbyd'>Winter '18</a> and <a href='https://www.youtube.com/playlist?list=PLnyLEAQD8TQfeqH_4IFUs_vmskm5FMFss'>Spring '18</a> playlists to see all of our recorded games. Feel free to share with friends!</p>
+  <p>Welcome to the *official* highlight clip page for the Setters of Catan volleyball team! Message Hoff to add a new clip. To watch a whole season or game, click on the season or game headers below.</p>
 </body>
 </html>
